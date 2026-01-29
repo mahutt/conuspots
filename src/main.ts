@@ -1,3 +1,5 @@
+import { spotsToFeatureCollection } from './lib/adapters'
+import { spots } from './lib/spots'
 import './style.css'
 
 import mapboxgl from 'mapbox-gl'
@@ -15,11 +17,28 @@ if (!mapContainer) {
 
 const map = new mapboxgl.Map({
   container: mapContainer,
-  center: [-74.5, 40],
+  center: [-73.58002939422165, 45.49376041794034],
   style: 'mapbox://styles/mapbox/standard',
   zoom: 9,
 })
 
 map.on('style.load', () => {
   map.setConfigProperty('basemap', 'theme', 'monochrome')
+})
+
+map.on('load', () => {
+  map.addSource('spots', {
+    type: 'geojson',
+    data: spotsToFeatureCollection(spots),
+  })
+
+  map.addLayer({
+    id: 'building-area-fill',
+    type: 'fill',
+    source: 'spots',
+    paint: {
+      'fill-color': '#d05351',
+      'fill-opacity': 0.4,
+    },
+  })
 })
