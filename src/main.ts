@@ -1,24 +1,25 @@
 import './style.css'
-import typescriptLogo from './typescript.svg'
-import viteLogo from '/vite.svg'
-import { setupCounter } from './counter.ts'
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-  <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
-  </div>
-`
+import mapboxgl from 'mapbox-gl'
 
-setupCounter(document.querySelector<HTMLButtonElement>('#counter')!)
+const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
+if (!MAPBOX_ACCESS_TOKEN) {
+  throw new Error('Missing Mapbox access token')
+}
+mapboxgl.accessToken = MAPBOX_ACCESS_TOKEN
+
+const mapContainer = document.getElementById('map')
+if (!mapContainer) {
+  throw new Error('Missing map container element')
+}
+
+const map = new mapboxgl.Map({
+  container: mapContainer,
+  center: [-74.5, 40],
+  style: 'mapbox://styles/mapbox/standard',
+  zoom: 9,
+})
+
+map.on('style.load', () => {
+  map.setConfigProperty('basemap', 'theme', 'monochrome')
+})
