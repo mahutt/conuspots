@@ -37,7 +37,7 @@ map.on('load', () => {
   })
 
   map.addLayer({
-    id: MapLayer.BuildingAreaFill,
+    id: MapLayer.BuildingFill,
     type: 'fill',
     source: MapSource.Spots,
     paint: {
@@ -54,13 +54,39 @@ map.on('load', () => {
     },
   })
 
+  map.addLayer({
+    id: MapLayer.BuildingLabels,
+    type: 'symbol',
+    source: MapSource.Spots,
+    layout: {
+      'text-field': ['get', 'ref'],
+      'text-size': 12,
+      'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+      'text-allow-overlap': true,
+    },
+    paint: {
+      'text-color': Colour.Primary,
+      'text-halo-color': '#ffffff',
+      'text-halo-width': 2,
+      'text-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        Zoom.Campus,
+        0,
+        Zoom.Building,
+        1,
+      ],
+    },
+  })
+
   map.addSource(MapSource.Campuses, {
     type: 'geojson',
     data: campusesToFeatureCollection([sgwCampus, loyCampus]),
   })
 
   map.addLayer({
-    id: MapLayer.CampusesFill,
+    id: MapLayer.CampusFill,
     type: 'fill',
     source: MapSource.Campuses,
     paint: {

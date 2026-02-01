@@ -5,6 +5,7 @@ export function campusToFeature(campus: Campus): GeoJSON.Feature {
     type: 'Feature',
     properties: {
       name: campus.name,
+      ref: campus.ref,
     },
     geometry: campus.polygon,
   }
@@ -24,6 +25,7 @@ export function spotToFeature(spot: Spot): GeoJSON.Feature {
     type: 'Feature',
     properties: {
       name: spot.name,
+      ref: spot.ref,
     },
     geometry: spot.polygon,
   }
