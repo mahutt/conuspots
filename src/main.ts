@@ -1,5 +1,9 @@
-import { spotsToFeatureCollection } from './lib/adapters'
-import { spots } from './lib/spots'
+import {
+  campusesToFeatureCollection,
+  spotsToFeatureCollection,
+} from './lib/adapters'
+import { loyCampus, sgwCampus, spots } from './lib/spots'
+import { Colour, MapLayer, MapSource, Zoom } from './lib/types'
 import './style.css'
 
 import mapboxgl from 'mapbox-gl'
@@ -17,9 +21,9 @@ if (!mapContainer) {
 
 const map = new mapboxgl.Map({
   container: mapContainer,
-  center: [-73.58002939422165, 45.49376041794034],
+  center: [-73.6067965246496, 45.48281403704806],
   style: 'mapbox://styles/mapbox/standard',
-  zoom: 9,
+  zoom: Zoom.Default,
 })
 
 map.on('style.load', () => {
@@ -27,18 +31,74 @@ map.on('style.load', () => {
 })
 
 map.on('load', () => {
-  map.addSource('spots', {
+  map.addSource(MapSource.Spots, {
     type: 'geojson',
     data: spotsToFeatureCollection(spots),
   })
 
   map.addLayer({
-    id: 'building-area-fill',
+    id: MapLayer.BuildingAreaFill,
     type: 'fill',
-    source: 'spots',
+    source: MapSource.Spots,
     paint: {
-      'fill-color': '#d05351',
-      'fill-opacity': 0.4,
+      'fill-color': Colour.Primary,
+      'fill-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        Zoom.Campus,
+        0,
+        Zoom.Building,
+        0.4,
+      ],
+    },
+  })
+
+  map.addSource(MapSource.Campuses, {
+    type: 'geojson',
+    data: campusesToFeatureCollection([sgwCampus, loyCampus]),
+  })
+
+  map.addLayer({
+    id: MapLayer.CampusesFill,
+    type: 'fill',
+    source: MapSource.Campuses,
+    paint: {
+      'fill-color': Colour.Primary,
+      'fill-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        Zoom.Campus,
+        0.2,
+        Zoom.Building,
+        0,
+      ],
+    },
+  })
+
+  map.addLayer({
+    id: MapLayer.CampusLabels,
+    type: 'symbol',
+    source: MapSource.Campuses,
+    layout: {
+      'text-field': ['get', 'name'],
+      'text-size': 16,
+      'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
+    },
+    paint: {
+      'text-color': Colour.Primary,
+      'text-halo-color': '#ffffff',
+      'text-halo-width': 2,
+      'text-opacity': [
+        'interpolate',
+        ['linear'],
+        ['zoom'],
+        Zoom.Campus,
+        1,
+        Zoom.Building,
+        0,
+      ],
     },
   })
 })
