@@ -6,8 +6,9 @@ export enum MapSource {
 }
 
 export enum MapLayer {
-  BuildingAreaFill = 'building-area-fill',
-  CampusesFill = 'campuses-fill',
+  BuildingFill = 'building-fill',
+  BuildingLabels = 'building-labels',
+  CampusFill = 'campus-fill',
   CampusLabels = 'campus-labels',
 }
 
@@ -23,11 +24,13 @@ export enum Colour {
 
 export interface Campus {
   name: string
+  ref: string
   spots: Spot[]
   polygon: Polygon
 }
 
 export interface Spot {
   name: string
+  ref: string
   polygon: Polygon
 }

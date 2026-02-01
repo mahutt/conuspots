@@ -4,7 +4,8 @@ import { convex } from '@turf/turf'
 
 const sgwSpots: Spot[] = [
   {
-    name: 'TD',
+    name: 'Toronto-Dominion Building',
+    ref: 'TD',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -26,7 +27,8 @@ const sgwSpots: Spot[] = [
     },
   },
   {
-    name: 'LS',
+    name: 'Learning Square',
+    ref: 'LS',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -43,7 +45,8 @@ const sgwSpots: Spot[] = [
     },
   },
   {
-    name: 'LB',
+    name: 'J.W McConnell Building',
+    ref: 'LB',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -83,7 +86,8 @@ const sgwSpots: Spot[] = [
     },
   },
   {
-    name: 'H',
+    name: 'Henry F. Hall Building',
+    ref: 'H',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -106,7 +110,8 @@ const sgwSpots: Spot[] = [
     },
   },
   {
-    name: 'EV',
+    name: 'Engineering, Computer Science and Visual Arts Integrated Complex',
+    ref: 'EV',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -142,7 +147,8 @@ const sgwSpots: Spot[] = [
     },
   },
   {
-    name: 'MB',
+    name: 'John Molson Building',
+    ref: 'MB',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -175,7 +181,8 @@ const sgwSpots: Spot[] = [
 
 const loySpots: Spot[] = [
   {
-    name: 'VL',
+    name: 'Vanier Library Building',
+    ref: 'VL',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -196,7 +203,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'VE',
+    name: 'Vanier Extension',
+    ref: 'VE',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -212,7 +220,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'PT',
+    name: 'Oscar Peterson Concert Hall',
+    ref: 'PT',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -231,7 +240,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'PS',
+    name: 'Physical Services Building',
+    ref: 'PS',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -254,7 +264,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'FC',
+    name: 'F.C Smith Building',
+    ref: 'FC',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -295,7 +306,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'AD',
+    name: 'Administration Building',
+    ref: 'AD',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -360,7 +372,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'CC',
+    name: 'Central Building',
+    ref: 'CC',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -395,7 +408,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'PY',
+    name: 'Psychology Building',
+    ref: 'PY',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -434,7 +448,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'RF',
+    name: 'Loyola Jesuit Hall and Conference Centre',
+    ref: 'RF',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -464,7 +479,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'SP',
+    name: 'Richard J. Renaud Science Complex',
+    ref: 'SP',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -524,7 +540,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'GE',
+    name: 'Centre for Structural and Functional Genomics',
+    ref: 'GE',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -546,7 +563,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'CJ',
+    name: 'Communication Studies and Journalism Building',
+    ref: 'CJ',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -592,7 +610,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'RA',
+    name: 'Reacreation and Athletics Complex',
+    ref: 'RA',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -619,7 +638,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'PC',
+    name: 'PERFORM Centre',
+    ref: 'PC',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -635,7 +655,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'SD',
+    name: 'Stinger Dome',
+    ref: 'SD',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -660,7 +681,8 @@ const loySpots: Spot[] = [
     },
   },
   {
-    name: 'HU',
+    name: 'Applied Science Hub',
+    ref: 'HU',
     polygon: {
       type: 'Polygon',
       coordinates: [
@@ -691,7 +713,8 @@ const sgwPolygonFeature = convex({
 }) as Feature<Polygon, GeoJsonProperties>
 
 export const sgwCampus: Campus = {
-  name: 'Sir George Williams Campus (SGW)',
+  name: 'Sir George Williams Campus ',
+  ref: 'SGW',
   spots: sgwSpots,
   polygon: sgwPolygonFeature.geometry,
 }
@@ -702,7 +725,8 @@ const loyPolygonFeature = convex({
 }) as Feature<Polygon, GeoJsonProperties>
 
 export const loyCampus: Campus = {
-  name: 'Loyola Campus (LOY)',
+  name: 'Loyola Campus',
+  ref: 'LOY',
   spots: loySpots,
   polygon: loyPolygonFeature.geometry,
 }
