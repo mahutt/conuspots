@@ -1,4 +1,23 @@
-import type { Spot } from './types'
+import type { Campus, Spot } from './types'
+
+export function campusToFeature(campus: Campus): GeoJSON.Feature {
+  return {
+    type: 'Feature',
+    properties: {
+      name: campus.name,
+    },
+    geometry: campus.polygon,
+  }
+}
+
+export function campusesToFeatureCollection(
+  campuses: Campus[],
+): GeoJSON.FeatureCollection {
+  return {
+    type: 'FeatureCollection',
+    features: campuses.map(campusToFeature),
+  }
+}
 
 export function spotToFeature(spot: Spot): GeoJSON.Feature {
   return {
@@ -6,10 +25,7 @@ export function spotToFeature(spot: Spot): GeoJSON.Feature {
     properties: {
       name: spot.name,
     },
-    geometry: {
-      type: 'Polygon',
-      coordinates: spot.polygonCoordinates,
-    },
+    geometry: spot.polygon,
   }
 }
 
