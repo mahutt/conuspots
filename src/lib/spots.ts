@@ -1,8 +1,8 @@
 import type { Feature, GeoJsonProperties, Polygon } from 'geojson'
-import type { Campus, Spot } from './types'
+import type { Campus, Building } from './types'
 import { convex } from '@turf/turf'
 
-const sgwSpots: Spot[] = [
+const sgwBuildings: Building[] = [
   {
     name: 'Toronto-Dominion Building',
     ref: 'TD',
@@ -179,7 +179,7 @@ const sgwSpots: Spot[] = [
   },
 ]
 
-const loySpots: Spot[] = [
+const loyBuildings: Building[] = [
   {
     name: 'Vanier Library Building',
     ref: 'VL',
@@ -709,26 +709,27 @@ const loySpots: Spot[] = [
 
 const sgwPolygonFeature = convex({
   type: 'GeometryCollection',
-  geometries: sgwSpots.map((spot) => spot.polygon),
+  geometries: sgwBuildings.map((building) => building.polygon),
 }) as Feature<Polygon, GeoJsonProperties>
 
 export const sgwCampus: Campus = {
   name: 'Sir George Williams Campus ',
   ref: 'SGW',
-  spots: sgwSpots,
+  buildings: sgwBuildings,
   polygon: sgwPolygonFeature.geometry,
 }
 
 const loyPolygonFeature = convex({
   type: 'GeometryCollection',
-  geometries: loySpots.map((spot) => spot.polygon),
+  geometries: loyBuildings.map((building) => building.polygon),
 }) as Feature<Polygon, GeoJsonProperties>
 
 export const loyCampus: Campus = {
   name: 'Loyola Campus',
   ref: 'LOY',
-  spots: loySpots,
+  buildings: loyBuildings,
   polygon: loyPolygonFeature.geometry,
 }
 
-export const spots = [...sgwSpots, ...loySpots]
+export const buildings = [...sgwBuildings, ...loyBuildings]
+export const campuses = [sgwCampus, loyCampus]
