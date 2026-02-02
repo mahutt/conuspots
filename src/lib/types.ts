@@ -1,17 +1,5 @@
 import type { Polygon } from 'geojson'
 
-export enum MapSource {
-  Spots = 'spots',
-  Campuses = 'campuses',
-}
-
-export enum MapLayer {
-  BuildingFill = 'building-fill',
-  BuildingLabels = 'building-labels',
-  CampusFill = 'campus-fill',
-  CampusLabels = 'campus-labels',
-}
-
 export enum Zoom {
   Default = 12,
   Campus = 14,
@@ -20,16 +8,17 @@ export enum Zoom {
 
 export enum Colour {
   Primary = '#d05351',
+  Selected = '#2563EB',
 }
 
 export interface Campus {
   name: string
   ref: string
-  spots: Spot[]
+  buildings: Building[]
   polygon: Polygon
 }
 
-export interface Spot {
+export interface Building {
   name: string
   ref: string
   polygon: Polygon

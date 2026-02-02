@@ -1,11 +1,15 @@
-import type { Campus, Spot } from './types'
+import type { Campus, Building } from './types'
 
-export function campusToFeature(campus: Campus): GeoJSON.Feature {
+export function campusToFeature(
+  campus: Campus,
+  selectedRef: string | null = null,
+): GeoJSON.Feature {
   return {
     type: 'Feature',
     properties: {
       name: campus.name,
       ref: campus.ref,
+      selected: campus.ref === selectedRef,
     },
     geometry: campus.polygon,
   }
@@ -13,29 +17,37 @@ export function campusToFeature(campus: Campus): GeoJSON.Feature {
 
 export function campusesToFeatureCollection(
   campuses: Campus[],
+  selectedRef: string | null = null,
 ): GeoJSON.FeatureCollection {
   return {
     type: 'FeatureCollection',
-    features: campuses.map(campusToFeature),
+    features: campuses.map((campus) => campusToFeature(campus, selectedRef)),
   }
 }
 
-export function spotToFeature(spot: Spot): GeoJSON.Feature {
+export function buildingToFeature(
+  building: Building,
+  selectedRef: string | null = null,
+): GeoJSON.Feature {
   return {
     type: 'Feature',
     properties: {
-      name: spot.name,
-      ref: spot.ref,
+      name: building.name,
+      ref: building.ref,
+      selected: building.ref === selectedRef,
     },
-    geometry: spot.polygon,
+    geometry: building.polygon,
   }
 }
 
-export function spotsToFeatureCollection(
-  spots: Spot[],
+export function buildingsToFeatureCollection(
+  buildings: Building[],
+  selectedRef: string | null = null,
 ): GeoJSON.FeatureCollection {
   return {
     type: 'FeatureCollection',
-    features: spots.map(spotToFeature),
+    features: buildings.map((building) =>
+      buildingToFeature(building, selectedRef),
+    ),
   }
 }

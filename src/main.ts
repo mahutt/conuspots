@@ -1,12 +1,14 @@
 import {
   campusesToFeatureCollection,
-  spotsToFeatureCollection,
+  buildingsToFeatureCollection,
 } from './lib/adapters'
-import { loyCampus, sgwCampus, spots } from './lib/spots'
-import { Colour, MapLayer, MapSource, Zoom } from './lib/types'
+import { isBuildingLayer, isCampusLayer, MapLayer } from './lib/layers'
+import { MapSource } from './lib/sources'
+import { campuses, buildings } from './lib/spots'
+import { Colour, Zoom } from './lib/types'
 import './style.css'
 
-import mapboxgl from 'mapbox-gl'
+import mapboxgl, { MapMouseEvent, type GeoJSONFeature } from 'mapbox-gl'
 
 const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
 if (!MAPBOX_ACCESS_TOKEN) {
@@ -31,17 +33,22 @@ map.on('style.load', () => {
 })
 
 map.on('load', () => {
-  map.addSource(MapSource.Spots, {
+  map.addSource(MapSource.Buildings, {
     type: 'geojson',
-    data: spotsToFeatureCollection(spots),
+    data: buildingsToFeatureCollection(buildings),
   })
 
   map.addLayer({
     id: MapLayer.BuildingFill,
     type: 'fill',
-    source: MapSource.Spots,
+    source: MapSource.Buildings,
     paint: {
-      'fill-color': Colour.Primary,
+      'fill-color': [
+        'case',
+        ['get', 'selected'],
+        Colour.Selected,
+        Colour.Primary,
+      ],
       'fill-opacity': [
         'interpolate',
         ['linear'],
@@ -57,7 +64,7 @@ map.on('load', () => {
   map.addLayer({
     id: MapLayer.BuildingLabels,
     type: 'symbol',
-    source: MapSource.Spots,
+    source: MapSource.Buildings,
     layout: {
       'text-field': ['get', 'ref'],
       'text-size': 12,
@@ -65,7 +72,12 @@ map.on('load', () => {
       'text-allow-overlap': true,
     },
     paint: {
-      'text-color': Colour.Primary,
+      'text-color': [
+        'case',
+        ['get', 'selected'],
+        Colour.Selected,
+        Colour.Primary,
+      ],
       'text-halo-color': '#ffffff',
       'text-halo-width': 2,
       'text-opacity': [
@@ -82,7 +94,7 @@ map.on('load', () => {
 
   map.addSource(MapSource.Campuses, {
     type: 'geojson',
-    data: campusesToFeatureCollection([sgwCampus, loyCampus]),
+    data: campusesToFeatureCollection(campuses),
   })
 
   map.addLayer({
@@ -90,7 +102,12 @@ map.on('load', () => {
     type: 'fill',
     source: MapSource.Campuses,
     paint: {
-      'fill-color': Colour.Primary,
+      'fill-color': [
+        'case',
+        ['get', 'selected'],
+        Colour.Selected,
+        Colour.Primary,
+      ],
       'fill-opacity': [
         'interpolate',
         ['linear'],
@@ -113,7 +130,12 @@ map.on('load', () => {
       'text-font': ['Open Sans Bold', 'Arial Unicode MS Bold'],
     },
     paint: {
-      'text-color': Colour.Primary,
+      'text-color': [
+        'case',
+        ['get', 'selected'],
+        Colour.Selected,
+        Colour.Primary,
+      ],
       'text-halo-color': '#ffffff',
       'text-halo-width': 2,
       'text-opacity': [
@@ -126,5 +148,89 @@ map.on('load', () => {
         0,
       ],
     },
+  })
+
+  // Adding hover effect over fill layers only for simplicity
+  const fillLayers = [MapLayer.BuildingFill, MapLayer.CampusFill]
+  fillLayers.forEach((layer) => {
+    map.on('mouseenter', layer, () => {
+      if (isBuildingLayer(layer) && map.getZoom() > Zoom.Campus) {
+        map.getCanvas().style.cursor = 'pointer'
+      } else if (isCampusLayer(layer) && map.getZoom() < Zoom.Building) {
+        map.getCanvas().style.cursor = 'pointer'
+      }
+    })
+
+    map.on('mouseleave', layer, () => {
+      if (isBuildingLayer(layer) && map.getZoom() > Zoom.Campus) {
+        map.getCanvas().style.cursor = ''
+      } else if (isCampusLayer(layer) && map.getZoom() < Zoom.Building) {
+        map.getCanvas().style.cursor = ''
+      }
+    })
+  })
+
+  map.on('click', (e: MapMouseEvent) => {
+    const features = map.queryRenderedFeatures(e.point, {
+      layers: Object.values(MapLayer),
+    })
+
+    const buildingBucket: GeoJSONFeature[] = []
+    const campusBucket: GeoJSONFeature[] = []
+
+    for (const feature of features) {
+      if (isBuildingLayer(feature.layer!.id)) {
+        buildingBucket.push(feature)
+      } else if (isCampusLayer(feature.layer!.id)) {
+        campusBucket.push(feature)
+      }
+    }
+
+    let selectedFeature: GeoJSONFeature | null = null
+    let selectedSource: MapSource | null = null
+
+    for (const feature of [...buildingBucket, ...campusBucket]) {
+      const layer = feature.layer!.id
+      if (isBuildingLayer(layer) && map.getZoom() > Zoom.Campus) {
+        selectedFeature = feature
+        selectedSource = MapSource.Buildings
+        break
+      } else if (isCampusLayer(layer) && map.getZoom() < Zoom.Building) {
+        selectedFeature = feature
+        selectedSource = MapSource.Campuses
+        break
+      }
+    }
+
+    const buildingSource = map.getSource(
+      MapSource.Buildings,
+    ) as mapboxgl.GeoJSONSource
+    const campusSource = map.getSource(
+      MapSource.Campuses,
+    ) as mapboxgl.GeoJSONSource
+
+    if (!selectedFeature || !selectedSource) {
+      // reset both sources
+      buildingSource.setData(buildingsToFeatureCollection(buildings))
+      campusSource.setData(campusesToFeatureCollection(campuses))
+      return
+    }
+
+    if (selectedSource === MapSource.Buildings) {
+      buildingSource.setData(
+        buildingsToFeatureCollection(
+          buildings,
+          selectedFeature.properties?.ref,
+        ),
+      )
+      campusSource.setData(
+        campusesToFeatureCollection(campuses, selectedFeature.properties?.ref),
+      )
+    } else if (selectedSource === MapSource.Campuses) {
+      buildingSource.setData(buildingsToFeatureCollection(buildings))
+      campusSource.setData(
+        campusesToFeatureCollection(campuses, selectedFeature.properties?.ref),
+      )
+    }
   })
 })
