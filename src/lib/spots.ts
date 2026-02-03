@@ -1,9 +1,10 @@
 import type { Feature, GeoJsonProperties, Polygon } from 'geojson'
-import type { Campus, Building } from './types'
+import { type Campus, type Building, LocationType } from './types'
 import { convex } from '@turf/turf'
 
 const sgwBuildings: Building[] = [
   {
+    type: LocationType.Building,
     name: 'Toronto-Dominion Building',
     ref: 'TD',
     polygon: {
@@ -27,6 +28,7 @@ const sgwBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Learning Square',
     ref: 'LS',
     polygon: {
@@ -45,6 +47,7 @@ const sgwBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'J.W McConnell Building',
     ref: 'LB',
     polygon: {
@@ -86,6 +89,7 @@ const sgwBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Henry F. Hall Building',
     ref: 'H',
     polygon: {
@@ -110,6 +114,7 @@ const sgwBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Engineering, Computer Science and Visual Arts Integrated Complex',
     ref: 'EV',
     polygon: {
@@ -147,6 +152,7 @@ const sgwBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'John Molson Building',
     ref: 'MB',
     polygon: {
@@ -181,6 +187,7 @@ const sgwBuildings: Building[] = [
 
 const loyBuildings: Building[] = [
   {
+    type: LocationType.Building,
     name: 'Vanier Library Building',
     ref: 'VL',
     polygon: {
@@ -203,6 +210,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Vanier Extension',
     ref: 'VE',
     polygon: {
@@ -220,6 +228,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Oscar Peterson Concert Hall',
     ref: 'PT',
     polygon: {
@@ -240,6 +249,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Physical Services Building',
     ref: 'PS',
     polygon: {
@@ -264,6 +274,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'F.C Smith Building',
     ref: 'FC',
     polygon: {
@@ -306,6 +317,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Administration Building',
     ref: 'AD',
     polygon: {
@@ -372,6 +384,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Central Building',
     ref: 'CC',
     polygon: {
@@ -408,6 +421,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Psychology Building',
     ref: 'PY',
     polygon: {
@@ -448,6 +462,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Loyola Jesuit Hall and Conference Centre',
     ref: 'RF',
     polygon: {
@@ -479,6 +494,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Richard J. Renaud Science Complex',
     ref: 'SP',
     polygon: {
@@ -540,6 +556,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Centre for Structural and Functional Genomics',
     ref: 'GE',
     polygon: {
@@ -563,6 +580,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Communication Studies and Journalism Building',
     ref: 'CJ',
     polygon: {
@@ -610,6 +628,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Reacreation and Athletics Complex',
     ref: 'RA',
     polygon: {
@@ -638,6 +657,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'PERFORM Centre',
     ref: 'PC',
     polygon: {
@@ -655,6 +675,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Stinger Dome',
     ref: 'SD',
     polygon: {
@@ -681,6 +702,7 @@ const loyBuildings: Building[] = [
     },
   },
   {
+    type: LocationType.Building,
     name: 'Applied Science Hub',
     ref: 'HU',
     polygon: {
@@ -713,6 +735,7 @@ const sgwPolygonFeature = convex({
 }) as Feature<Polygon, GeoJsonProperties>
 
 export const sgwCampus: Campus = {
+  type: LocationType.Campus,
   name: 'Sir George Williams Campus ',
   ref: 'SGW',
   buildings: sgwBuildings,
@@ -725,6 +748,7 @@ const loyPolygonFeature = convex({
 }) as Feature<Polygon, GeoJsonProperties>
 
 export const loyCampus: Campus = {
+  type: LocationType.Campus,
   name: 'Loyola Campus',
   ref: 'LOY',
   buildings: loyBuildings,
@@ -733,3 +757,7 @@ export const loyCampus: Campus = {
 
 export const buildings = [...sgwBuildings, ...loyBuildings]
 export const campuses = [sgwCampus, loyCampus]
+export const locations = [...buildings, ...campuses]
+export const locationsMap = new Map(
+  locations.map((location) => [location.ref, location]),
+)
