@@ -733,3 +733,4 @@ export const loyCampus: Campus = {
 
 export const buildings = [...sgwBuildings, ...loyBuildings]
 export const campuses = [sgwCampus, loyCampus]
+export const allLocations = [...buildings, ...campuses]

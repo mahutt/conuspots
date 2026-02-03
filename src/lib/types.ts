@@ -1,5 +1,9 @@
 import type { Polygon } from 'geojson'
 
+export enum CustomEventType {
+  LocationSelected = 'location-selected',
+}
+
 export enum Zoom {
   Default = 12,
   Campus = 14,
@@ -11,15 +15,16 @@ export enum Colour {
   Selected = '#2563EB',
 }
 
-export interface Campus {
+export interface Location {
   name: string
   ref: string
-  buildings: Building[]
-  polygon: Polygon
 }
 
-export interface Building {
-  name: string
-  ref: string
+export interface Campus extends Location {
+  polygon: Polygon
+  buildings: Building[]
+}
+
+export interface Building extends Location {
   polygon: Polygon
 }
