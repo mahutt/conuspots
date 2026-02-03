@@ -1,5 +1,5 @@
 import { Trie } from '../lib/trie'
-import { allLocations } from '../lib/spots'
+import { locations } from '../lib/spots'
 import { CustomEventType } from '../lib/types'
 
 class SearchBar extends HTMLElement {
@@ -11,7 +11,7 @@ class SearchBar extends HTMLElement {
     super()
 
     this.trie = new Trie()
-    for (const location of allLocations) this.trie.insert(location)
+    for (const location of locations) this.trie.insert(location)
 
     const container = document.createElement('div')
     container.classList.add('relative')

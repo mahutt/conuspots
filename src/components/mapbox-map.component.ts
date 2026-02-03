@@ -1,14 +1,25 @@
+import type { Polygon } from 'geojson'
 import {
   campusesToFeatureCollection,
   buildingsToFeatureCollection,
 } from '../lib/adapters'
 import { isBuildingLayer, isCampusLayer, MapLayer } from '../lib/layers'
 import { MapSource } from '../lib/sources'
-import { campuses, buildings } from '../lib/spots'
-import { Colour, Zoom, type Location, CustomEventType } from '../lib/types'
+import { campuses, buildings, locationsMap } from '../lib/spots'
+import {
+  Colour,
+  Zoom,
+  type Location,
+  CustomEventType,
+  LocationType,
+} from '../lib/types'
 import '../style.css'
 
-import mapboxgl, { MapMouseEvent, type GeoJSONFeature } from 'mapbox-gl'
+import mapboxgl, {
+  MapMouseEvent,
+  type GeoJSONFeature,
+  type LngLatLike,
+} from 'mapbox-gl'
 
 class MapboxMap extends HTMLElement {
   private selectedLocation: Location | null
@@ -255,7 +266,14 @@ class MapboxMap extends HTMLElement {
   }
 
   private selectLocation(ref: string) {
-    if (!this.map) return
+    const location = locationsMap.get(ref)
+    if (!location) return
+
+    this.selectedLocation = location
+
+    const center = this.calculatePolygonCenter(location.polygon)
+    let zoom = Zoom.Default
+    const duration = 1000
 
     const buildingSource = this.map.getSource(
       MapSource.Buildings,
@@ -264,49 +282,26 @@ class MapboxMap extends HTMLElement {
       MapSource.Campuses,
     ) as mapboxgl.GeoJSONSource
 
-    // Check if it's a building
-    const building = buildings.find((b) => b.ref === ref)
-    if (building) {
+    if (location.type === LocationType.Building) {
       buildingSource.setData(buildingsToFeatureCollection(buildings, ref))
       campusSource.setData(campusesToFeatureCollection(campuses, ref))
-      this.selectedLocation = building
-
-      // Calculate center of the building polygon
-      const coords = building.polygon.coordinates[0]
-      const center = this.calculatePolygonCenter(coords)
-
-      // Zoom to building level and center on it
-      this.map.flyTo({
-        center: center as [number, number],
-        zoom: Zoom.Building,
-        duration: 1000,
-      })
-      return
-    }
-
-    // Check if it's a campus
-    const campus = campuses.find((c) => c.ref === ref)
-    if (campus) {
+      zoom = Zoom.Building
+    } else if (location.type === LocationType.Campus) {
       buildingSource.setData(buildingsToFeatureCollection(buildings))
       campusSource.setData(campusesToFeatureCollection(campuses, ref))
-      this.selectedLocation = campus
-
-      // Calculate center of the campus polygon
-      const coords = campus.polygon.coordinates[0]
-      const center = this.calculatePolygonCenter(coords)
-
-      // Zoom to campus level and center on it
-      this.map.flyTo({
-        center: center as [number, number],
-        zoom: Zoom.Campus,
-        duration: 1000,
-      })
+      zoom = Zoom.Campus
     }
+    this.map.flyTo({
+      center,
+      zoom,
+      duration,
+    })
   }
 
-  private calculatePolygonCenter(coordinates: number[][]): number[] {
+  private calculatePolygonCenter(polygon: Polygon): LngLatLike {
     let totalX = 0
     let totalY = 0
+    const coordinates = polygon.coordinates[0] // Assuming first linear ring for simplicity
     const numPoints = coordinates.length
 
     for (const coord of coordinates) {
