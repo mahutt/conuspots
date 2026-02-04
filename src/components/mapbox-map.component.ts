@@ -22,8 +22,8 @@ import mapboxgl, {
 } from 'mapbox-gl'
 
 class MapboxMap extends HTMLElement {
-  private selectedLocation: Location | null
   private map: mapboxgl.Map
+  public selectedLocation: Location | null
 
   constructor() {
     super()
