@@ -20,6 +20,10 @@ class SearchBar extends HTMLElement {
     this.input.type = 'text'
     this.input.placeholder = 'Search by campus, building, or room...'
     this.input.name = 'search'
+    this.input.autocapitalize = 'off'
+    this.input.autocomplete = 'off'
+    this.input.autocorrect = false
+    this.input.spellcheck = false
 
     this.input.classList.add(
       'bg-white',
