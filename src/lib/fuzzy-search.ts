@@ -10,7 +10,7 @@ const FUSE_OPTIONS = {
   minMatchCharLength: 1,
   shouldSort: true,
   findAllMatches: false,
-  keys: ['name'],
+  keys: ['name', 'ref'],
 }
 
 const SEARCH_RESULTS_LIMIT = 5
