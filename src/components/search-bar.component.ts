@@ -1,5 +1,5 @@
 import { Trie } from '../lib/trie'
-import { locations } from '../lib/spots'
+import { locations } from '../lib/locations'
 import { CustomEventType } from '../lib/types'
 
 class SearchBar extends HTMLElement {
