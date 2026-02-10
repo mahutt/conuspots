@@ -5,7 +5,7 @@ import {
 } from '../lib/adapters'
 import { isBuildingLayer, isCampusLayer, MapLayer } from '../lib/layers'
 import { MapSource } from '../lib/sources'
-import { campuses, buildings, locationsMap } from '../lib/spots'
+import { campuses, buildings, locationsMap } from '../lib/locations'
 import {
   Colour,
   Zoom,
