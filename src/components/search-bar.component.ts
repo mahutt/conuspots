@@ -1,17 +1,12 @@
-import { Trie } from '../lib/trie'
-import { locations } from '../lib/locations'
-import { CustomEventType } from '../lib/types'
+import { searchLocations } from '../lib/fuzzy-search'
+import { CustomEventType, type Location } from '../lib/types'
 
 class SearchBar extends HTMLElement {
-  private trie: Trie
   private input: HTMLInputElement
   private dropdown: HTMLDivElement
 
   constructor() {
     super()
-
-    this.trie = new Trie()
-    for (const location of locations) this.trie.insert(location)
 
     const container = document.createElement('div')
     container.classList.add('relative')
@@ -76,7 +71,7 @@ class SearchBar extends HTMLElement {
       return
     }
 
-    const results = this.trie.search(query).slice(0, 5)
+    const results = searchLocations(query)
 
     if (results.length === 0) {
       this.hideDropdown()
@@ -86,7 +81,7 @@ class SearchBar extends HTMLElement {
     this.showResults(results)
   }
 
-  private showResults(results: any[]) {
+  private showResults(results: Location[]) {
     this.dropdown.innerHTML = ''
 
     results.forEach((location) => {
