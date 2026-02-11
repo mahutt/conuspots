@@ -1,9 +1,9 @@
 import { searchLocations } from '../lib/fuzzy-search'
-import { CustomEventType, type Location } from '../lib/types'
+import { SearchDropdown } from './search-dropdown.component'
 
 class SearchBar extends HTMLElement {
   private input: HTMLInputElement
-  private dropdown: HTMLDivElement
+  private dropdown: SearchDropdown
 
   constructor() {
     super()
@@ -33,28 +33,16 @@ class SearchBar extends HTMLElement {
       'shadow-sm',
     )
 
-    this.dropdown = document.createElement('div')
-    this.dropdown.classList.add(
-      'absolute',
-      'top-full',
-      'mt-1',
-      'w-92',
-      'left-1/2',
-      '-translate-x-1/2',
-      'bg-white',
-      'border',
-      'border-gray-300',
-      'rounded-lg',
-      'shadow-lg',
-      'hidden',
-      'max-h-80',
-      'overflow-y-auto',
-    )
+    this.dropdown = new SearchDropdown((location) => {
+      this.input.value = location.name
+      this.input.blur()
+    })
 
     this.input.addEventListener('input', () => this.handleInput())
+    document.addEventListener('keydown', this.handleKeyDown.bind(this))
     document.addEventListener('click', (e) => {
       if (!this.contains(e.target as Node)) {
-        this.hideDropdown()
+        this.dropdown.hideDropdown()
       }
     })
 
@@ -63,60 +51,25 @@ class SearchBar extends HTMLElement {
     this.appendChild(container)
   }
 
+  connectedCallback() {}
+
   private handleInput() {
     const query = this.input.value.trim()
 
     if (query.length === 0) {
-      this.hideDropdown()
+      this.dropdown.hideDropdown()
       return
     }
 
-    const results = searchLocations(query)
+    this.dropdown.showLocations(searchLocations(query))
+  }
 
-    if (results.length === 0) {
-      this.hideDropdown()
-      return
+  private handleKeyDown(e: KeyboardEvent) {
+    if (e.key === '/') {
+      e.preventDefault()
+      this.input.focus()
     }
-
-    this.showResults(results)
   }
-
-  private showResults(results: Location[]) {
-    this.dropdown.innerHTML = ''
-
-    results.forEach((location) => {
-      const item = document.createElement('div')
-      item.classList.add(
-        'px-5',
-        'py-3',
-        'hover:bg-gray-100',
-        'cursor-pointer',
-        'text-sm',
-      )
-
-      item.textContent = location.name || location.toString()
-
-      item.addEventListener('click', () => {
-        this.input.value = location.name || location.toString()
-        this.hideDropdown()
-        const event = new CustomEvent(CustomEventType.LocationSelected, {
-          detail: location,
-          bubbles: true,
-        })
-        this.dispatchEvent(event)
-      })
-
-      this.dropdown.appendChild(item)
-    })
-
-    this.dropdown.classList.remove('hidden')
-  }
-
-  private hideDropdown() {
-    this.dropdown.classList.add('hidden')
-  }
-
-  connectedCallback() {}
 }
 
 customElements.define('search-bar', SearchBar)
