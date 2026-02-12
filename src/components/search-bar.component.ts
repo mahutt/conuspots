@@ -1,7 +1,9 @@
+import type AppState from '../lib/app-state'
 import { searchLocations } from '../lib/fuzzy-search'
+import type Subscriber from '../lib/subscriber'
 import { SearchDropdown } from './search-dropdown.component'
 
-class SearchBar extends HTMLElement {
+export default class SearchBar extends HTMLElement implements Subscriber {
   private input: HTMLInputElement
   private dropdown: SearchDropdown
 
@@ -33,10 +35,7 @@ class SearchBar extends HTMLElement {
       'shadow-sm',
     )
 
-    this.dropdown = new SearchDropdown((location) => {
-      this.input.value = location.name
-      this.input.blur()
-    })
+    this.dropdown = new SearchDropdown()
 
     this.input.addEventListener('input', () => this.handleInput())
     document.addEventListener('keydown', this.handleKeyDown.bind(this))
@@ -52,6 +51,13 @@ class SearchBar extends HTMLElement {
   }
 
   connectedCallback() {}
+
+  public update(state: AppState) {
+    const { selectedLocation } = state
+    if (!selectedLocation) return
+    this.input.value = selectedLocation.name
+    this.input.blur()
+  }
 
   private handleInput() {
     const query = this.input.value.trim()

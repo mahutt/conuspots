@@ -6,13 +6,7 @@ import {
 import { isBuildingLayer, isCampusLayer, MapLayer } from '../lib/layers'
 import { MapSource } from '../lib/sources'
 import { campuses, buildings, locationsMap } from '../lib/locations'
-import {
-  Colour,
-  Zoom,
-  type Location,
-  CustomEventType,
-  LocationType,
-} from '../lib/types'
+import { Colour, Zoom, LocationType } from '../lib/types'
 import '../style.css'
 
 import mapboxgl, {
@@ -20,15 +14,15 @@ import mapboxgl, {
   type GeoJSONFeature,
   type LngLatLike,
 } from 'mapbox-gl'
+import type Subscriber from '../lib/subscriber'
+import type AppState from '../lib/app-state'
+import stateManager from '../lib/state-manager'
 
-class MapboxMap extends HTMLElement {
+export default class MapboxMap extends HTMLElement implements Subscriber {
   private map: mapboxgl.Map
-  public selectedLocation: Location | null
 
   constructor() {
     super()
-
-    this.selectedLocation = null
 
     const MAPBOX_ACCESS_TOKEN = import.meta.env.VITE_MAPBOX_ACCESS_TOKEN
     if (!MAPBOX_ACCESS_TOKEN) {
@@ -204,76 +198,27 @@ class MapboxMap extends HTMLElement {
         }
 
         let selectedFeature: GeoJSONFeature | null = null
-        let selectedSource: MapSource | null = null
 
         for (const feature of [...buildingBucket, ...campusBucket]) {
           const layer = feature.layer!.id
           if (isBuildingLayer(layer) && map.getZoom() > Zoom.Campus) {
             selectedFeature = feature
-            selectedSource = MapSource.Buildings
             break
           } else if (isCampusLayer(layer) && map.getZoom() < Zoom.Building) {
             selectedFeature = feature
-            selectedSource = MapSource.Campuses
             break
           }
         }
 
-        const buildingSource = map.getSource(
-          MapSource.Buildings,
-        ) as mapboxgl.GeoJSONSource
-        const campusSource = map.getSource(
-          MapSource.Campuses,
-        ) as mapboxgl.GeoJSONSource
-
-        if (!selectedFeature || !selectedSource) {
-          // reset both sources
-          buildingSource.setData(buildingsToFeatureCollection(buildings))
-          campusSource.setData(campusesToFeatureCollection(campuses))
-          this.selectedLocation = null
-          return
-        }
-
-        const selectedRef = selectedFeature.properties?.ref
-
-        if (selectedSource === MapSource.Buildings) {
-          buildingSource.setData(
-            buildingsToFeatureCollection(buildings, selectedRef),
-          )
-          campusSource.setData(
-            campusesToFeatureCollection(campuses, selectedRef),
-          )
-          this.selectedLocation =
-            buildings.find((b) => b.ref === selectedRef) || null
-        } else if (selectedSource === MapSource.Campuses) {
-          buildingSource.setData(buildingsToFeatureCollection(buildings))
-          campusSource.setData(
-            campusesToFeatureCollection(campuses, selectedRef),
-          )
-          this.selectedLocation =
-            campuses.find((c) => c.ref === selectedRef) || null
-        }
+        const targetRef = selectedFeature?.properties?.ref
+        const targetLocation = locationsMap.get(targetRef) ?? null
+        stateManager.selectedLocation = targetLocation
       })
     })
-
-    // Listen for location selection events from search bar
-    document.addEventListener(CustomEventType.LocationSelected, ((
-      e: CustomEvent,
-    ) => {
-      const location = e.detail as Location
-      this.selectLocation(location.ref)
-    }) as EventListener)
   }
 
-  private selectLocation(ref: string) {
-    const location = locationsMap.get(ref)
-    if (!location) return
-
-    this.selectedLocation = location
-
-    const center = this.calculatePolygonCenter(location.polygon)
-    let zoom = Zoom.Default
-    const duration = 1000
+  public update(state: AppState) {
+    const { selectedLocation } = state
 
     const buildingSource = this.map.getSource(
       MapSource.Buildings,
@@ -282,13 +227,27 @@ class MapboxMap extends HTMLElement {
       MapSource.Campuses,
     ) as mapboxgl.GeoJSONSource
 
-    if (location.type === LocationType.Building) {
-      buildingSource.setData(buildingsToFeatureCollection(buildings, ref))
-      campusSource.setData(campusesToFeatureCollection(campuses, ref))
-      zoom = Zoom.Building
-    } else if (location.type === LocationType.Campus) {
+    if (!selectedLocation) {
       buildingSource.setData(buildingsToFeatureCollection(buildings))
-      campusSource.setData(campusesToFeatureCollection(campuses, ref))
+      campusSource.setData(campusesToFeatureCollection(campuses))
+      return
+    }
+
+    const center = this.calculatePolygonCenter(selectedLocation.polygon)
+    let zoom = Zoom.Default
+    const duration = 1000
+
+    if (selectedLocation.type === LocationType.Building) {
+      buildingSource.setData(
+        buildingsToFeatureCollection(buildings, selectedLocation.ref),
+      )
+      campusSource.setData(campusesToFeatureCollection(campuses))
+      zoom = Zoom.Building
+    } else if (selectedLocation.type === LocationType.Campus) {
+      buildingSource.setData(buildingsToFeatureCollection(buildings))
+      campusSource.setData(
+        campusesToFeatureCollection(campuses, selectedLocation.ref),
+      )
       zoom = Zoom.Campus
     }
     this.map.flyTo({

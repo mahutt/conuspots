@@ -1,13 +1,12 @@
-import { CustomEventType, type Location } from '../lib/types'
+import stateManager from '../lib/state-manager'
+import { type Location } from '../lib/types'
 import { SearchDropdownItem } from './search-dropdown-item.component'
 
 export class SearchDropdown extends HTMLElement {
-  private selectCallback?: (location: Location) => void
   private selectedIndex: number = 0
 
-  constructor(selectCallback?: (location: Location) => void) {
+  constructor() {
     super()
-    this.selectCallback = selectCallback
     this.classList.add(
       'absolute',
       'top-full',
@@ -49,13 +48,8 @@ export class SearchDropdown extends HTMLElement {
 
     locations.forEach((location) => {
       const item = new SearchDropdownItem(location, () => {
-        this.selectCallback?.(location)
+        stateManager.selectedLocation = location
         this.hideDropdown()
-        const event = new CustomEvent(CustomEventType.LocationSelected, {
-          detail: location,
-          bubbles: true,
-        })
-        this.dispatchEvent(event)
       })
       this.appendChild(item)
     })
