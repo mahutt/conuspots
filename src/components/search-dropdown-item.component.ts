@@ -12,8 +12,7 @@ export class SearchDropdownItem extends HTMLElement {
     this.addEventListener('click', this.selectCallback)
     this.classList.add(
       'block',
-      'px-3',
-      'py-3',
+      'p-3',
       'hover:bg-gray-100', // renders as unhighlighted by default
       'cursor-pointer',
       'text-sm',
