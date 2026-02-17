@@ -257,6 +257,10 @@ export default class MapboxMap extends HTMLElement implements Subscriber {
     })
   }
 
+  public getMap() {
+    return this.map
+  }
+
   private calculatePolygonCenter(polygon: Polygon): LngLatLike {
     let totalX = 0
     let totalY = 0
