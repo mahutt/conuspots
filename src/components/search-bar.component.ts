@@ -10,6 +10,14 @@ export default class SearchBar extends HTMLElement implements Subscriber {
   constructor() {
     super()
 
+    this.classList.add(
+      'absolute',
+      'top-4',
+      'z-10',
+      'left-1/2',
+      '-translate-x-1/2',
+    )
+
     const container = document.createElement('div')
     container.classList.add('relative')
 
