@@ -7,7 +7,7 @@ import type MapboxMap from './mapbox-map.component'
 import { bbox } from '@turf/turf'
 import { isBuilding } from '../lib/type-guards'
 
-export class InfoCard extends HTMLElement implements Subscriber {
+export default class InfoCard extends HTMLElement implements Subscriber {
   private mapboxMap: MapboxMap
   private location: Building | null
   private marker: mapboxgl.Marker | null
