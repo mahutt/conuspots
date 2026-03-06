@@ -1,10 +1,15 @@
 import type AppState from '../lib/app-state'
 import { searchLocations } from '../lib/fuzzy-search'
 import type Subscriber from '../lib/subscriber'
+import {
+  SearchBarButton,
+  SearchBarButtonState,
+} from './search-bar-button.component'
 import { SearchDropdown } from './search-dropdown.component'
 
 export default class SearchBar extends HTMLElement implements Subscriber {
   private input: HTMLInputElement
+  private button: SearchBarButton
   private dropdown: SearchDropdown
 
   constructor() {
@@ -16,10 +21,19 @@ export default class SearchBar extends HTMLElement implements Subscriber {
       'z-10',
       'left-1/2',
       '-translate-x-1/2',
+      'bg-white',
+      'border',
+      'border-gray-300',
+      'rounded-l-full',
+      'rounded-r-full',
+      'w-96',
+      'shadow-sm',
+      'focus-within:ring-2',
+      'focus-within:ring-blue-200',
     )
 
     const container = document.createElement('div')
-    container.classList.add('relative')
+    container.classList.add('relative', 'flex', 'items-center')
 
     this.input = document.createElement('input')
     this.input.type = 'text'
@@ -31,17 +45,21 @@ export default class SearchBar extends HTMLElement implements Subscriber {
     this.input.spellcheck = false
 
     this.input.classList.add(
-      'bg-white',
-      'px-5',
+      'flex-1',
+      'pl-5',
+      'pr-2.5',
       'py-3',
       'text-sm',
-      'border',
-      'border-gray-300',
-      'rounded-l-full',
-      'rounded-r-full',
-      'w-96',
-      'shadow-sm',
+      'focus:outline-none',
     )
+
+    this.button = new SearchBarButton()
+    this.button.clearCallback = () => {
+      this.input.value = ''
+      this.dropdown.hideDropdown()
+      this.input.focus()
+      this.button.setState(SearchBarButtonState.Search)
+    }
 
     this.dropdown = new SearchDropdown()
 
@@ -54,6 +72,7 @@ export default class SearchBar extends HTMLElement implements Subscriber {
     })
 
     container.appendChild(this.input)
+    container.appendChild(this.button)
     container.appendChild(this.dropdown)
     this.appendChild(container)
   }
@@ -71,10 +90,12 @@ export default class SearchBar extends HTMLElement implements Subscriber {
     const query = this.input.value.trim()
 
     if (query.length === 0) {
+      this.button.setState(SearchBarButtonState.Search)
       this.dropdown.hideDropdown()
       return
     }
 
+    this.button.setState(SearchBarButtonState.Clear)
     this.dropdown.showLocations(searchLocations(query))
   }
 
