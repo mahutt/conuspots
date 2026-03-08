@@ -18,7 +18,7 @@ class StateManager {
   }
 
   public unsubscribe(s: Subscriber) {
-    this.subscribers.filter((subscriber) => subscriber !== s)
+    this.subscribers = this.subscribers.filter((subscriber) => subscriber !== s)
   }
 
   public notifySubscribers() {
