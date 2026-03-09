@@ -19,4 +19,3 @@ controls.appendChild(campusToggle)
 
 const infoCard = new InfoCard(mapboxMap)
 stateManager.subscribe(infoCard)
-document.body.appendChild(infoCard)
