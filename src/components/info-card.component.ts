@@ -7,31 +7,17 @@ import type MapboxMap from './mapbox-map.component'
 import { bbox } from '@turf/turf'
 import { isBuilding } from '../lib/type-guards'
 
-export default class InfoCard extends HTMLElement implements Subscriber {
+export default class InfoCard implements Subscriber {
   private mapboxMap: MapboxMap
   private location: Building | null
-  private marker: mapboxgl.Marker | null
+  private popup: mapboxgl.Popup | null
 
   constructor(mapboxMap: MapboxMap) {
-    super()
     this.mapboxMap = mapboxMap
     this.location = null
-    this.marker = null
-
-    this.classList.add(
-      'fixed',
-      'p-4',
-      'flex',
-      'flex-col',
-      'bg-white',
-      'shadow-sm',
-      'rounded-xl',
-      'max-w-xs',
-    )
+    this.popup = null
     this.render()
   }
-
-  connectedCallback() {}
 
   public update(state: AppState) {
     const { selectedLocation } = state
@@ -51,27 +37,34 @@ export default class InfoCard extends HTMLElement implements Subscriber {
   }
 
   private render() {
+    this.popup?.remove()
+
     if (!this.location) {
-      this.marker?.remove()
-      this.marker = null
+      this.popup = null
       return
     }
 
-    this.innerHTML = `
-      <div class="font-medium">${this.location.name}</div>
-      <div class="text-gray-500 text-xs">${this.location.ref} • ${capitalize(this.location.type)}</div>
-    `
+    const [minLng, minLat, maxLng, maxLat] = bbox(this.location.polygon)
+    const lngLat: [number, number] = [
+      (minLng + maxLng) / 2,
+      (minLat + maxLat) / 2,
+    ]
 
-    const [, minLat, maxLng, maxLat] = bbox(this.location.polygon)
-    const lngLat: [number, number] = [maxLng, (minLat + maxLat) / 2]
-    this.marker = new mapboxgl.Marker({
-      element: this,
-      anchor: 'left',
-      offset: [10, 0],
+    this.popup = new mapboxgl.Popup({
+      closeOnClick: false,
+      closeButton: false,
     })
+      .setHTML(this.generatePopupHTML())
       .setLngLat(lngLat)
       .addTo(this.mapboxMap.getMap())
   }
-}
 
-customElements.define('info-card', InfoCard)
+  private generatePopupHTML() {
+    if (!this.location) return ''
+
+    return `
+      <div class="font-medium">${this.location.name}</div>
+      <div class="text-gray-500 text-xs">${this.location.ref} • ${capitalize(this.location.type)}</div>
+    `
+  }
+}
