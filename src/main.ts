@@ -12,10 +12,10 @@ const controls = document.getElementById('controls') as HTMLDivElement
 
 const searchBar = new SearchBar()
 stateManager.subscribe(searchBar)
-controls.appendChild(searchBar)
+controls.prepend(searchBar)
 
 const campusToggle = new CampusToggle(mapboxMap)
-controls.appendChild(campusToggle)
+controls.prepend(campusToggle)
 
 const infoCard = new InfoCard(mapboxMap)
 stateManager.subscribe(infoCard)
