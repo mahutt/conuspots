@@ -35,6 +35,7 @@ export default class CampusToggle extends HTMLElement {
     this.selectedCampus = null
 
     this.classList.add(
+      'pointer-events-auto',
       'flex',
       'bg-white',
       'border',

@@ -16,6 +16,7 @@ export default class SearchBar extends HTMLElement implements Subscriber {
     super()
 
     this.classList.add(
+      'pointer-events-auto',
       'block',
       'bg-white',
       'border',
