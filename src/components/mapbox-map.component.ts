@@ -242,7 +242,9 @@ export default class MapboxMap extends HTMLElement implements Subscriber {
         buildingsToFeatureCollection(buildings, selectedLocation.ref),
       )
       campusSource.setData(campusesToFeatureCollection(campuses))
-      zoom = Zoom.Building
+      // Only adjust the zoom if we're not already zoomed in on / past the building level
+      zoom =
+        this.map.getZoom() > Zoom.Building ? this.map.getZoom() : Zoom.Building
     } else if (selectedLocation.type === LocationType.Campus) {
       buildingSource.setData(buildingsToFeatureCollection(buildings))
       campusSource.setData(
