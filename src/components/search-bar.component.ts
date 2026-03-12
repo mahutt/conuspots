@@ -60,6 +60,7 @@ export default class SearchBar extends HTMLElement implements Subscriber {
 
     this.dropdown = new SearchDropdown()
 
+    this.input.addEventListener('focus', () => this.input.select())
     this.input.addEventListener('input', () => this.handleInput())
     document.addEventListener('keydown', this.handleKeyDown.bind(this))
     document.addEventListener('click', (e) => {
