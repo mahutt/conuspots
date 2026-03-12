@@ -81,6 +81,7 @@ export default class SearchBar extends HTMLElement implements Subscriber {
     if (!selectedLocation) return
     this.input.value = selectedLocation.name
     this.input.blur()
+    this.button.setState(SearchBarButtonState.Clear)
   }
 
   private handleInput() {
