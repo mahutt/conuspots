@@ -1,5 +1,6 @@
 import type AppState from '../lib/app-state'
 import { searchLocations } from '../lib/fuzzy-search'
+import searchHistory from '../lib/search-history'
 import type Subscriber from '../lib/subscriber'
 import {
   SearchBarButton,
@@ -60,7 +61,7 @@ export default class SearchBar extends HTMLElement implements Subscriber {
 
     this.dropdown = new SearchDropdown()
 
-    this.input.addEventListener('focus', () => this.input.select())
+    this.input.addEventListener('focus', () => this.handleFocus())
     this.input.addEventListener('input', () => this.handleInput())
     document.addEventListener('keydown', this.handleKeyDown.bind(this))
     document.addEventListener('click', (e) => {
@@ -83,6 +84,12 @@ export default class SearchBar extends HTMLElement implements Subscriber {
     this.input.value = selectedLocation.name
     this.input.blur()
     this.button.setState(SearchBarButtonState.Clear)
+    searchHistory.push(selectedLocation)
+  }
+
+  private handleFocus() {
+    this.input.select()
+    this.handleInput()
   }
 
   private handleInput() {
@@ -90,7 +97,7 @@ export default class SearchBar extends HTMLElement implements Subscriber {
 
     if (query.length === 0) {
       this.button.setState(SearchBarButtonState.Search)
-      this.dropdown.hideDropdown()
+      this.dropdown.showLocations(searchHistory.getHistory())
       return
     }
 
