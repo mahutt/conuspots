@@ -1,4 +1,6 @@
 import {
+  CC_BUILDING,
+  CJ_BUILDING,
   CL_BUILDING,
   FB_BUILDING,
   FG_BUILDING,
@@ -19,6 +21,28 @@ function generateClassrooms(
     building,
   }))
 }
+
+const CC_ROOM_CODES = [
+  'CC-101',
+  'CC-106',
+  'CC-111',
+  'CC-112',
+  'CC-115',
+  'CC-116',
+  'CC-204',
+  'CC-301',
+  'CC-305',
+  'CC-308',
+  'CC-310',
+  'CC-312',
+  'CC-314',
+  'CC-320',
+  'CC-321',
+  'CC-405',
+  'CC-425',
+]
+
+const CJ_ROOM_CODES = ['CJ 1.121', 'CJ 1.125', 'CJ 1.129']
 
 const CL_ROOM_CODES = [
   'S-CL-215:',
@@ -150,6 +174,8 @@ const MB_ROOM_CODES = [
   'MB 6.425',
 ]
 
+export const ccClassrooms = generateClassrooms(CC_ROOM_CODES, CC_BUILDING)
+export const cjClassrooms = generateClassrooms(CJ_ROOM_CODES, CJ_BUILDING)
 export const clClassrooms = generateClassrooms(CL_ROOM_CODES, CL_BUILDING)
 export const fbClassrooms = generateClassrooms(FB_ROOM_CODES, FB_BUILDING)
 export const fgClassrooms = generateClassrooms(FG_ROOM_CODES, FG_BUILDING)

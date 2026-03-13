@@ -66,6 +66,8 @@ import {
   Z_BUILDING,
 } from './buildings'
 import {
+  ccClassrooms,
+  cjClassrooms,
   clClassrooms,
   fbClassrooms,
   fgClassrooms,
@@ -169,6 +171,8 @@ export const loyCampus: Campus = {
 }
 
 export const classrooms = [
+  ...ccClassrooms,
+  ...cjClassrooms,
   ...clClassrooms,
   ...fbClassrooms,
   ...fgClassrooms,
