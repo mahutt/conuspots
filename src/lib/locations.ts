@@ -77,6 +77,8 @@ import {
   lsClassrooms,
   mbClassrooms,
   rfClassrooms,
+  siClassrooms,
+  spClassrooms,
 } from './classrooms'
 
 const sgwBuildings: Building[] = [
@@ -185,6 +187,8 @@ export const classrooms = [
   ...lsClassrooms,
   ...mbClassrooms,
   ...rfClassrooms,
+  ...siClassrooms,
+  ...spClassrooms,
 ]
 export const buildings = [...sgwBuildings, ...loyBuildings]
 export const campuses = [sgwCampus, loyCampus]
