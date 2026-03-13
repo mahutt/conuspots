@@ -65,7 +65,14 @@ import {
   X_BUILDING,
   Z_BUILDING,
 } from './buildings'
-import { hClassrooms } from './classrooms'
+import {
+  clClassrooms,
+  fbClassrooms,
+  fgClassrooms,
+  hClassrooms,
+  lsClassrooms,
+  mbClassrooms,
+} from './classrooms'
 
 const sgwBuildings: Building[] = [
   TD_BUILDING,
@@ -161,7 +168,14 @@ export const loyCampus: Campus = {
   polygon: loyPolygonFeature.geometry,
 }
 
-export const classrooms = [...hClassrooms]
+export const classrooms = [
+  ...clClassrooms,
+  ...fbClassrooms,
+  ...fgClassrooms,
+  ...hClassrooms,
+  ...lsClassrooms,
+  ...mbClassrooms,
+]
 export const buildings = [...sgwBuildings, ...loyBuildings]
 export const campuses = [sgwCampus, loyCampus]
 export const locations = [...buildings, ...campuses, ...classrooms]
