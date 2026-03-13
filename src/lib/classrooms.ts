@@ -5,8 +5,11 @@ import {
   FB_BUILDING,
   FG_BUILDING,
   H_BUILDING,
+  HB_BUILDING,
+  HC_BUILDING,
   LS_BUILDING,
   MB_BUILDING,
+  RF_BUILDING,
 } from './buildings'
 import { type Building, type Classroom, LocationType } from './types'
 
@@ -122,6 +125,10 @@ const H_ROOM_CODES = [
   'H-1271',
 ]
 
+const HB_ROOM_CODES = ['HB-130']
+
+const HC_ROOM_CODES = ['HC-155', 'HC-157']
+
 const LS_ROOM_CODES = [
   'LS-105',
   'LS-107',
@@ -174,11 +181,16 @@ const MB_ROOM_CODES = [
   'MB 6.425',
 ]
 
+const RF_ROOM_CODES = ['RF-110', 'RF-120', 'RF-130', 'RF-310']
+
 export const ccClassrooms = generateClassrooms(CC_ROOM_CODES, CC_BUILDING)
 export const cjClassrooms = generateClassrooms(CJ_ROOM_CODES, CJ_BUILDING)
 export const clClassrooms = generateClassrooms(CL_ROOM_CODES, CL_BUILDING)
 export const fbClassrooms = generateClassrooms(FB_ROOM_CODES, FB_BUILDING)
 export const fgClassrooms = generateClassrooms(FG_ROOM_CODES, FG_BUILDING)
 export const hClassrooms = generateClassrooms(H_ROOM_CODES, H_BUILDING)
+export const hbClassrooms = generateClassrooms(HB_ROOM_CODES, HB_BUILDING)
+export const hcClassrooms = generateClassrooms(HC_ROOM_CODES, HC_BUILDING)
 export const lsClassrooms = generateClassrooms(LS_ROOM_CODES, LS_BUILDING)
 export const mbClassrooms = generateClassrooms(MB_ROOM_CODES, MB_BUILDING)
+export const rfClassrooms = generateClassrooms(RF_ROOM_CODES, RF_BUILDING)
