@@ -20,11 +20,10 @@ export class SearchDropdown extends HTMLElement {
       'rounded-xl',
       'shadow-lg',
       'hidden',
-      'max-h-80',
+      'max-h-92',
       'overflow-y-auto',
       'p-2',
     )
-    document.addEventListener('click', this.handleClick.bind(this))
     document.addEventListener('keydown', this.handleKeyDown.bind(this))
   }
 
@@ -55,12 +54,6 @@ export class SearchDropdown extends HTMLElement {
     })
     this.updateSelection(0)
     this.showDropdown()
-  }
-
-  private handleClick(e: MouseEvent) {
-    if (!this.contains(e.target as Node)) {
-      this.hideDropdown()
-    }
   }
 
   private handleKeyDown(e: KeyboardEvent) {
