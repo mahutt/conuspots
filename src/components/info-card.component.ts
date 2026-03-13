@@ -1,15 +1,15 @@
 import mapboxgl from 'mapbox-gl'
 import type AppState from '../lib/app-state'
 import type Subscriber from '../lib/subscriber'
-import { type Building } from '../lib/types'
+import { type Building, type Classroom } from '../lib/types'
 import { capitalize } from '../lib/utils'
 import type MapboxMap from './mapbox-map.component'
 import { bbox } from '@turf/turf'
-import { isBuilding } from '../lib/type-guards'
+import { isBuilding, isClassroom } from '../lib/type-guards'
 
 export default class InfoCard implements Subscriber {
   private mapboxMap: MapboxMap
-  private location: Building | null
+  private location: Classroom | Building | null
   private popup: mapboxgl.Popup | null
 
   constructor(mapboxMap: MapboxMap) {
@@ -22,7 +22,11 @@ export default class InfoCard implements Subscriber {
   public update(state: AppState) {
     const { selectedLocation } = state
 
-    if (!selectedLocation || isBuilding(selectedLocation)) {
+    if (
+      !selectedLocation ||
+      isClassroom(selectedLocation) ||
+      isBuilding(selectedLocation)
+    ) {
       this.location = selectedLocation
     } else {
       this.location = null
@@ -44,7 +48,11 @@ export default class InfoCard implements Subscriber {
       return
     }
 
-    const [minLng, minLat, maxLng, maxLat] = bbox(this.location.polygon)
+    const polygon = isClassroom(this.location)
+      ? this.location.building.polygon
+      : this.location.polygon
+
+    const [minLng, minLat, maxLng, maxLat] = bbox(polygon)
     const lngLat: [number, number] = [
       (minLng + maxLng) / 2,
       (minLat + maxLat) / 2,

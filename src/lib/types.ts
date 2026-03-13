@@ -14,20 +14,27 @@ export enum Colour {
 export enum LocationType {
   Campus = 'campus',
   Building = 'building',
+  Classroom = 'classroom',
 }
 
 export interface Location {
   type: LocationType
   name: string
   ref: string
-  polygon: Polygon
 }
 
 export interface Campus extends Location {
   type: LocationType.Campus
   buildings: Building[]
+  polygon: Polygon
 }
 
 export interface Building extends Location {
   type: LocationType.Building
+  polygon: Polygon
+}
+
+export interface Classroom extends Location {
+  type: LocationType.Classroom
+  building: Building
 }

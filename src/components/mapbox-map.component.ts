@@ -6,7 +6,7 @@ import {
 import { isBuildingLayer, isCampusLayer, MapLayer } from '../lib/layers'
 import { MapSource } from '../lib/sources'
 import { campuses, buildings, locationsMap } from '../lib/locations'
-import { Colour, Zoom, LocationType } from '../lib/types'
+import { Colour, Zoom } from '../lib/types'
 import '../style.css'
 
 import mapboxgl, {
@@ -17,6 +17,7 @@ import mapboxgl, {
 import type Subscriber from '../lib/subscriber'
 import type AppState from '../lib/app-state'
 import stateManager from '../lib/state-manager'
+import { isBuilding, isCampus, isClassroom } from '../lib/type-guards'
 
 export default class MapboxMap extends HTMLElement implements Subscriber {
   private map: mapboxgl.Map
@@ -233,23 +234,34 @@ export default class MapboxMap extends HTMLElement implements Subscriber {
       return
     }
 
-    const center = this.calculatePolygonCenter(selectedLocation.polygon)
+    let center: LngLatLike = [0, 0]
     let zoom = Zoom.Default
     const duration = 1000
 
-    if (selectedLocation.type === LocationType.Building) {
+    if (isClassroom(selectedLocation)) {
+      buildingSource.setData(
+        buildingsToFeatureCollection(buildings, selectedLocation.building.ref),
+      )
+      campusSource.setData(campusesToFeatureCollection(campuses))
+      center = this.calculatePolygonCenter(selectedLocation.building.polygon)
+      // Only adjust the zoom if we're not already zoomed in on / past the building level
+      zoom =
+        this.map.getZoom() > Zoom.Building ? this.map.getZoom() : Zoom.Building
+    } else if (isBuilding(selectedLocation)) {
       buildingSource.setData(
         buildingsToFeatureCollection(buildings, selectedLocation.ref),
       )
       campusSource.setData(campusesToFeatureCollection(campuses))
+      center = this.calculatePolygonCenter(selectedLocation.polygon)
       // Only adjust the zoom if we're not already zoomed in on / past the building level
       zoom =
         this.map.getZoom() > Zoom.Building ? this.map.getZoom() : Zoom.Building
-    } else if (selectedLocation.type === LocationType.Campus) {
+    } else if (isCampus(selectedLocation)) {
       buildingSource.setData(buildingsToFeatureCollection(buildings))
       campusSource.setData(
         campusesToFeatureCollection(campuses, selectedLocation.ref),
       )
+      center = this.calculatePolygonCenter(selectedLocation.polygon)
       zoom = Zoom.Campus
     }
     this.map.flyTo({
